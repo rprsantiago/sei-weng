@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js Web App</title>
+
+    <!-- Add the following Bootstrap CDN links -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+
+            </div>
+            <div class="col-md-6">
+                <h2>Sei Weng Bot</h2>
+                <form>
+                    <!-- Bootstrap form styling -->
+                    <div class="form-group">
+                        <label for="seedPhrase">Seed Phrase:</label>
+                        <input type="text" class="form-control" id="seedPhrase" name="seedPhrase" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contractAddress">Contract Address:</label>
+                        <input type="text" class="form-control" id="contractAddress" name="contractAddress" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phrase">Phase:</label>
+                        <input type="text" class="form-control" id="phase" name="phase" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price:</label>
+                        <input type="text" class="form-control" id="price" name="price" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addresssList">Address List:</label>
+                        <!-- <input type="textarea" class="form-control" id="addresssList" name="addresssList" required> -->
+                        <textarea class="form-control" id="addresssList" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rpcEndPoint">RPC Endpoint:</label>
+                        <input type="text" class="form-control" id="rpcEndPoint" name="rpcEndPoint" required>
+                    </div>
+
+                    <button type="button" class="btn btn-primary pull-right" onclick="submitForm()">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+
+        function submitForm() {
+
+            var priceForMint = 0;
+
+            // set seed phrase to variable
+            var seedPhrase = document.getElementById("seedPhrase").value;
+            var contractAddress = document.getElementById("contractAddress").value;
+            var phase = document.getElementById("phase").value;
+            var price = document.getElementById("price").value;
+            var addresssList = document.getElementById("addresssList").value;
+            var rpcEndPoint = document.getElementById("rpcEndPoint").value;
+
+            //if price is not 0, get price from user input, add 1.5 and multiply it to 1 million
+            if (price != 0) {
+                priceForMint = (parseFloat(price) + 1.5) * 1000000;
+            }
+
+            //addressList contains multiple string separated by ;, split it and put it into array
+            var addressListArray = addresssList.split(/\n/);
+            //loop through the array and call fetch /execute
+            for (var i = 0; i < addressListArray.length; i++) {
+                //call fetch /execute but send contract and seed phrase
+                fetch(`/execute?seedPhrase=${seedPhrase}&contractAddress=${contractAddress}&phase=${phase}&price=${priceForMint}&address=${addressListArray[i]}&rpcEndPoint=${rpcEndPoint}`, {
+                    method: 'GET',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Transaction Hash:', data.transactionHash);
+                        // You can handle the response as needed
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle errors
+                    });
+            }
+
+            
+
+        }
+    </script>
+</body>
+
+</html>
