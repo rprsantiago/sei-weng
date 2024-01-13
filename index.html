@@ -82,24 +82,30 @@
 
             //addressList contains multiple string separated by ;, split it and put it into array
             var addressListArray = addresssList.split(/\n/);
-            //loop through the array and call fetch /execute
-            for (var i = 0; i < addressListArray.length; i++) {
-                //call fetch /execute but send contract and seed phrase
-                fetch(`/execute?seedPhrase=${seedPhrase}&contractAddress=${contractAddress}&phase=${phase}&price=${priceForMint}&address=${addressListArray[i]}&rpcEndPoint=${rpcEndPoint}`, {
-                    method: 'GET',
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Transaction Hash:', data.transactionHash);
-                        // You can handle the response as needed
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        // Handle errors
-                    });
-            }
 
-            
+            fetch('/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    seedPhrase: seedPhrase,
+                    contractAddress: contractAddress,
+                    phase: phase,
+                    price: priceForMint,
+                    address: addressListArray,
+                    rpcEndPoint: rpcEndPoint
+                })
+            })
+                .then(response => response.json())
+            // .then(data => {
+            //     console.log('Transaction Hash:', data.transactionHash);
+            // })
+            // .catch(error => {
+            //     console.error('Error:', error);
+            // });
+            //}
+
 
         }
     </script>
